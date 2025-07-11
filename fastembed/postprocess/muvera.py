@@ -189,7 +189,7 @@ class MuveraPostprocessor:
         """
         model_desc = model._get_model_description(model.model_name)
         return cls(
-            d=model_desc.dim,
+            d=model_desc.dim,  # type: ignore[arg-type]
             k_sim=k_sim,
             d_proj=d_proj,
             R_reps=R_reps,
