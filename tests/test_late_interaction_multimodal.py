@@ -103,6 +103,25 @@ def test_embedding_size():
     assert model.embedding_size == 128
 
 
+def test_token_count() -> None:
+    if os.getenv("CI"):
+        pytest.skip("Colpali is too large to test in CI")
+    model_name = "Qdrant/colpali-v1.3-fp16"
+    model = LateInteractionMultimodalEmbedding(model_name=model_name, lazy_load=True)
+
+    documents = ["short doc", "it is a long document to check attention mask for paddings"]
+    short_doc_token_count = model.token_count(documents[0])
+    long_doc_token_count = model.token_count(documents[1])
+    documents_token_count = model.token_count(documents)
+    assert short_doc_token_count + long_doc_token_count == documents_token_count
+    assert short_doc_token_count + long_doc_token_count == model.token_count(
+        documents, batch_size=1
+    )
+    assert short_doc_token_count + long_doc_token_count < model.token_count(
+        documents, include_extension=True
+    )
+
+
 def test_colpali_image_mask():
     """Test that get_image_mask returns correct masks for image tokens."""
     if os.getenv("CI"):
